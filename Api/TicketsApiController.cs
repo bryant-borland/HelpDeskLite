@@ -10,6 +10,13 @@ public class TicketsApiController : ControllerBase
     public TicketsApiController(HelpDeskContext db) => _db = db;
 
     [HttpGet]
-    public async Task<IActionResult> Get() =>
+    public async Task<IActionResult> GetAll() =>
         Ok(await _db.Tickets.Include(t => t.Agent).ToListAsync());
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var ticket = await _db.Tickets.Include(t => t.Agent).FirstOrDefaultAsync(t => t.Id == id);
+        return ticket == null ? NotFound() : Ok(ticket);
+    }
 }
